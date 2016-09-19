@@ -4,10 +4,10 @@ where
 -- Definieren Sie eine Funktion fib zur Berechung der Fibonacci-Zahlen
 -- ab 0 
 fib     :: Integer -> Integer
-fib x = 
+fib x  
     | x == 0 = 0
     | x == 1 = 1
-    | x > 1  = x + fib(x-1) + fib(x-2)
+    | x > 1  = fib(x-1) + fib(x-2)
 
 
 -- Definieren Sie eine Funktion fib zur Berechung der Fibonacci-Zahlen
@@ -26,7 +26,10 @@ fib2 = undefined
 -- 1 erhöht.
     
 c       :: Integer -> Integer
-c n = undefined
+c n
+    | n == 1 = 1
+    | even(n) = 1 + c(n `div` 2)
+    | odd(n) = 1 + c(n * 3 + 1)
 
 
 -- Definieren Sie ein endrekurive Variante von c
@@ -41,7 +44,12 @@ c1 = undefined
 -- vordefinierten Funkt min und max.
 
 cmax    :: Integer -> Integer -> Integer
-cmax lb ub = undefined
+cmax lb ub 
+    | lb == ub = max (c lb) (c ub)
+    | otherwise = cmax lb ub-1 
+
+cmaxcheck lb ub =  [c x | x <- [lb..ub]] 
+
 
 
 -- Definieren Sie eine Funktion imax, die für ein
