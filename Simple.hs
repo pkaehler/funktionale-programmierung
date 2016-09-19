@@ -44,11 +44,13 @@ c1 = undefined
 -- vordefinierten Funkt min und max.
 
 cmax    :: Integer -> Integer -> Integer
-cmax lb ub 
-    | lb == ub = max (c lb) (c ub)
-    | otherwise = cmax lb ub-1 
+cmax lb ub = cmaxIter lb (c lb)
+  where cmaxIter i maximum
+          | i == ub = maximum
+          | i < ub  = cmaxIter (i + 1) (max maximum $ c (i + 1))
+          | i > ub  = error "lower bound is bigger than upper"
 
-cmaxcheck lb ub =  [c x | x <- [lb..ub]] 
+
 
 
 
