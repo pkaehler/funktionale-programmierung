@@ -14,7 +14,10 @@ fib x
 -- ab 0 mit linearer Laufzeit
 
 fib2    :: Integer -> Integer
-fib2 = undefined
+fib2 n = fibIter n 1 1
+  where fibIter i a sum
+          | i < 2 = sum
+          | otherwise = fibIter (i - 1) sum (sum + a)
 
 -- Definieren Sie eine Funktion c (für Collatz), die berechnet
 -- wie viele Rekursionsschritte benötigt werden, um
@@ -35,7 +38,11 @@ c n
 -- Definieren Sie ein endrekurive Variante von c
     
 c1      :: Integer -> Integer
-c1 = undefined
+c1 = collatzIter 0 n 
+  where collatzIter i val
+          | val == 1 = i
+          | even val = collatzIter (i + 1) (div val 2)
+          | odd val  = collatzIter (i + 1) ((val * 3) + 1)
 
 
 -- Definieren Sie eine Funktion cmax, die für ein
@@ -60,7 +67,11 @@ cmax lb ub = cmaxIter lb (c lb)
 -- Sie die obige Funktion cmax so um, dass sie mit imax arbeitet.
 
 imax    :: (Integer -> Integer) -> Integer -> Integer -> Integer
-imax f lb ub = undefined
+imax f lb ub = imaxIter lb (f lb)
+  where imaxIter i maximum
+          | i == ub = maximum
+          | i < ub  = imaxIter (i + 1) (max maximum ( f (i + 1)))
+          | i > ub  = error "lower bound is bigger than upper"
 
 
 cmax1   :: Integer -> Integer -> Integer
@@ -74,6 +85,13 @@ cmax1
 -- (mit einer lokalen Hilfsfunktion).
 
 imax2   :: (Integer -> Integer) -> Integer -> Integer -> (Integer, Integer)
-imax2 f lb ub = undefined
+imax2 f lb ub = imax2Iter lb (lb, (f lb))
+  where imax2Iter i (maxi, val)
+          | i == ub = (maxi, val)
+          | i < ub  = let m = f i 
+                      in imax2Iter (i + 1) (if m > val then i else maxi, max m val)
+          | i > ub  = error "lower bound is greater than upper"
+
+
 
 -- ----------------------------------------
