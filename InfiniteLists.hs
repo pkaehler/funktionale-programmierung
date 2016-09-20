@@ -26,7 +26,9 @@ fibs = 0:1:zipWith(+) (fibs) (tail fibs)
 -- sieve operation
 
 primes :: [Integer]
-primes = undefined
+primes = filterPrime [2..]
+  where filterPrime (p:xs) =
+          p : filterPrime [x | x <- xs, x `mod` p /= 0]
 
 -- ----------------------------------------
 --
