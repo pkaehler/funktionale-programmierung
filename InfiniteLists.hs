@@ -14,7 +14,7 @@ names = undefined
 -- fibs = [0, 1, 1, 2, 3, 5, 8, ...]
 
 fibs :: [Integer]
-fibs = undefined
+fibs = 0:1:zipWith(+) (fibs) (tail fibs)
 
 -- ----------------------------------------
 --
