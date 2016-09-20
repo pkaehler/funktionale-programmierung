@@ -27,7 +27,7 @@ nub (x : xs) = x : nub (filter (/=x) xs)
 
 nub' :: Eq a => [a] -> [a]
 nub' [] = []
-nub' (x : xs) = undefined
+nub' (x : xs) = x: nub' ([n| n<-xs, (n/=x)])
 
 
 -- .3 nub with foldr
