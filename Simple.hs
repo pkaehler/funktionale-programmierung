@@ -5,7 +5,6 @@ where
 -- ab 0 
 fib     :: Integer -> Integer
 fib x  
-    | x == 0 = 0
     | x == 1 = 1
     | x > 1  = fib(x-1) + fib(x-2)
 
@@ -14,10 +13,13 @@ fib x
 -- ab 0 mit linearer Laufzeit
 
 fib2    :: Integer -> Integer
-fib2 n = fibIter n 1 1
-  where fibIter i a sum
-          | i < 2 = sum
-          | otherwise = fibIter (i - 1) sum (sum + a)
+
+fib2 =
+   fib2' 0 1
+   where
+   fib2' x0 x1 0 = x0
+   fib2' x0 x1 n = fib2' x1 (x0 + x1) (n-1)
+
 
 -- Definieren Sie eine Funktion c (für Collatz), die berechnet
 -- wie viele Rekursionsschritte benötigt werden, um
@@ -30,19 +32,22 @@ fib2 n = fibIter n 1 1
     
 c       :: Integer -> Integer
 c n
-    | n == 1 = 1
-    | even(n) = 1 + c(n `div` 2)
-    | odd(n) = 1 + c(n * 3 + 1)
+    | n == 1 = 0
+    | even(n) = 1 + c (n `div` 2)
+    | odd(n) = 1 + c (n * 3 + 1)
 
 
 -- Definieren Sie ein endrekurive Variante von c
     
 c1      :: Integer -> Integer
-c1 = collatzIter 0 n 
-  where collatzIter i val
-          | val == 1 = i
-          | even val = collatzIter (i + 1) (div val 2)
-          | odd val  = collatzIter (i + 1) ((val * 3) + 1)
+
+c1 = c1' 0
+    where
+    c1' r n 
+        | n == 1  = r
+        | even(n) = c1' (r+1) (n `div` 2)
+        | odd(n)  = c1' (r+1) (n * 3 + 1)
+
 
 
 -- Definieren Sie eine Funktion cmax, die für ein
@@ -51,12 +56,17 @@ c1 = collatzIter 0 n
 -- vordefinierten Funkt min und max.
 
 cmax    :: Integer -> Integer -> Integer
-cmax lb ub = cmaxIter lb (c lb)
+cmax'    :: Integer -> Integer -> Integer
+
+cmax' lb ub = cmaxIter lb (c lb)
   where cmaxIter i maximum
           | i == ub = maximum
           | i < ub  = cmaxIter (i + 1) (max maximum $ c (i + 1))
           | i > ub  = error "lower bound is bigger than upper"
 
+cmax lb ub 
+    | lb == ub = c lb
+    | otherwise = max (c lb)  (cmax (lb + 1) ub) 
 
 
 
