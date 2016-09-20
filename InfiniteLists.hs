@@ -5,7 +5,10 @@ module InfiniteLists where
 -- names = ["a".."z", "a1".."z1", "a2".."z2", ...]
 
 names :: [String]
-names = undefined
+names = [[c] | c <- ['a'..'z']]
+
+names' :: [String]
+names' = names ++ [c ++ show n | n <- [1..], c <- names]
 
 
 -- | constructs the infinite sequence
