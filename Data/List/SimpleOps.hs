@@ -20,7 +20,7 @@ import Prelude hiding (splitAt)
 
 nub :: Eq a => [a] -> [a]
 nub [] = []
-nub (x : xs) = undefined
+nub (x : xs) = x : nub (filter (/=x) xs)
 
 
 -- .2 nub with list comprehension
@@ -103,7 +103,7 @@ partition'' = undefined
 -- ----------------------------------------
 --
 -- | all prefixes of a list
-      
+
 -- 1. impl: direct
 
 inits        :: [a] -> [[a]]
@@ -136,5 +136,5 @@ join' = undefined
 
 split' :: Eq a => a -> [a] -> [[a]]
 split' = undefined
-    
+
 -- ----------------------------------------
