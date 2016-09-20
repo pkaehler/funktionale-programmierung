@@ -59,7 +59,6 @@ hamilton
       is5 = [x | x <- [5,10..]]
 
 merge :: [Integer] -> [Integer] -> [Integer]
-
 merge [] ys         = ys
 merge xs []         = xs
 merge (x:xs) (y:ys)
@@ -73,7 +72,8 @@ merge (x:xs) (y:ys)
 -- direct impl
 
 merges :: [[Integer]] -> [Integer]
-merges = undefined
+merges []     = []
+merges (x:xs) = merge x (merges xs)
 
 -- | @merges@ with a fold
 
