@@ -13,7 +13,6 @@ overlap :: Interval -> Interval -> Bool
 overlap (x1, y1) (x2, y2)
    | x1 > x2   = overlap (x2, y2) (x1, y1)
    | otherwise = y1 + 1 >= x2
-                        
 
 
 less :: Interval -> Interval -> Bool
@@ -40,7 +39,8 @@ merge  (x1, y1) (x2, y2) = (min x1 x2, max y1 y2)
 type IntervalSet = [Interval]
 
 inv :: IntervalSet -> Bool
-inv = undefined
+inv (x:y:[]) = not (overlap x y) && less x y && not (nullInterval x) && not (nullInterval y)
+inv (x:y:xs) = not (overlap x y) && less x y && not (nullInterval x) && inv (y:xs)
 
 
 -- ----------------------------------------
