@@ -63,10 +63,10 @@ splitAt i xs = (take i xs, drop i xs)
 -- the impl
 splitAt' :: Int -> [a] -> ([a],[a])
 splitAt' _ [] = ([], [])
-splitAt' n xs
-  | n <= 0 = ([], xs)
-splitAt' i (x : xs) = (x:xs', ys')
-  where (xs', ys') = splitAt' (i - 1) xs
+splitAt' n (x : xs)
+  | n <= 0 = ([], (x:xs))
+  | n > 0  = (x:xs', ys')
+  where (xs', ys') = splitAt' (n - 1) xs
 
 -- ----------------------------------------
 
