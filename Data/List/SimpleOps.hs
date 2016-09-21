@@ -115,13 +115,17 @@ partition'' p = foldr test ([], [])
 -- 1. impl: direct
 
 inits        :: [a] -> [[a]]
-inits = undefined
+inits [] = [[]]
+inits (x:xs) = []:map (x:) (inits xs)
 
 -- 2. impl: with foldr
 -- after chapter about folds
 
 inits'        :: [a] -> [[a]]
-inits' = undefined
+inits' = foldr test []
+  where test x xs
+          | null xs = [[], [x]]
+          | otherwise = []:map (x:) xs
 
 -- ----------------------------------------
 
