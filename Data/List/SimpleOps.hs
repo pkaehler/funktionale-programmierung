@@ -93,13 +93,20 @@ partition p xs
 
 -- 1. impl: direct
 partition' :: (a -> Bool) -> [a] -> ([a], [a])
-partition' = undefined
+partition' _ [] = ([], [])
+partition' p (x:xs)
+  | p x = (x:xs', ys')
+  | otherwise = (xs', x:ys')
+  where (xs', ys') = partition' p xs
 
 -- 2. impl: with foldr
 -- after chapter about folds
 
 partition'' :: (a -> Bool) -> [a] -> ([a], [a])
-partition'' = undefined
+partition'' p = foldr test ([], [])
+  where test x (xs, ys)
+          | p x = (x:xs, ys)
+          | otherwise = (xs, x:ys)
 
 -- ----------------------------------------
 --
