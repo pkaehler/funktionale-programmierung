@@ -17,7 +17,7 @@ names' = names ++ [c ++ show n | n <- [1..], c <- names]
 -- fibs = [0, 1, 1, 2, 3, 5, 8, ...]
 
 fibs :: [Integer]
-fibs = undefined
+fibs = 0:1:zipWith (+) (tail fibs) fibs
 
 -- ----------------------------------------
 --
@@ -78,6 +78,6 @@ merges (x:xs) = merge x (merges xs)
 -- | @merges@ with a fold
 
 merges' :: [[Integer]] -> [Integer]
-merges' = undefined    -- after chapter about folds
+merges' = foldr merge []    -- after chapter about folds
 
 -- ----------------------------------------
