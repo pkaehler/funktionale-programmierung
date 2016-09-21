@@ -18,17 +18,17 @@ overlap (x1, y1) (x2, y2)
 
 less :: Interval -> Interval -> Bool
 less (_x1, y1) (x2, _y2)
-  = undefined
+  = y1 < x2
 
 
 nullInterval :: Interval -> Bool
 nullInterval (x, y)
-  = undefined
+  = x > y
 
 
 -- merge 2 (overlapping) intervals
 merge :: Interval -> Interval -> Interval
-merge = undefined
+merge = (x1, y1) (x2, y2) = (min x1 x2, max y1 y2)
 
 
 -- ----------------------------------------
