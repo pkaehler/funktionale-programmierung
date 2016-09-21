@@ -28,7 +28,7 @@ nullInterval (x, y)
 
 -- merge 2 (overlapping) intervals
 merge :: Interval -> Interval -> Interval
-merge = (x1, y1) (x2, y2) = (min x1 x2, max y1 y2)
+merge  (x1, y1) (x2, y2) = (min x1 x2, max y1 y2)
 
 
 -- ----------------------------------------
@@ -52,11 +52,15 @@ singleInterval x y
     | otherwise = []
 
 insertInterval :: Interval -> IntervalSet -> IntervalSet
-insertInterval = undefined
+insertInterval x [] = [x]
+insertInterval x (n:xs)
+  | overlap x n = merge x n : xs
+  | less x n = x : n : xs
+  | otherwise = n : insertInterval x xs
 
 
 fromIntervalList :: [(Int, Int)] -> IntervalSet
-fromIntervalList = undefined
+fromIntervalList  =foldr insertInterval []
 
 
 -- ----------------------------------------
