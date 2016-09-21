@@ -72,12 +72,14 @@ splitAt' = undefined
 
 -- 1. impl: direct or with map
 intercalate :: [a] -> [[a]] -> [a]
-intercalate = undefined
+intercalate ys []       = []
+intercalate ys (xs:[])  = xs
+intercalate ys (xs:xss) = xs ++ ys ++ intercalate ys xss
 
 -- 2. impl: with foldr
 -- after chapter about folds
 intercalate' :: [a] -> [[a]] -> [a]
-intercalate' = undefined
+intercalate' ys (xs:xss) = foldr (\x -> (++) x) [] (xs:xss)
 
 -- ----------------------------------------
 
