@@ -83,7 +83,9 @@ intercalate ys (xs:xss) = xs ++ ys ++ intercalate ys xss
 -- 2. impl: with foldr
 -- after chapter about folds
 intercalate' :: [a] -> [[a]] -> [a]
-intercalate' ys (xs:xss) = foldr (\x -> (++) x) [] (xs:xss)
+intercalate' ys (xs:xss) = undefined
+
+    -- foldr (\x -> (++) x) [] (xs:xss)
 
 -- ----------------------------------------
 
