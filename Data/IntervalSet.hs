@@ -11,7 +11,9 @@ type Interval = (Int, Int)
 
 overlap :: Interval -> Interval -> Bool
 overlap (x1, y1) (x2, y2)
-  = undefined
+   | x1 > x2   = overlap (x2, y2) (x1, y1)
+   | otherwise = y1 + 1 >= x2
+                        
 
 
 less :: Interval -> Interval -> Bool

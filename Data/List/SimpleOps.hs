@@ -62,7 +62,11 @@ splitAt i xs = (take i xs, drop i xs)
 
 -- the impl
 splitAt' :: Int -> [a] -> ([a],[a])
-splitAt' = undefined
+splitAt' _ [] = ([], [])
+splitAt' n xs
+  | n <= 0 = ([], xs)
+splitAt' i (x : xs) = (x:xs', ys')
+  where (xs', ys') = splitAt' (i - 1) xs
 
 -- ----------------------------------------
 
@@ -149,6 +153,10 @@ join' = undefined
 --   the delimiter does not occur in elements of result list
 
 split' :: Eq a => a -> [a] -> [[a]]
-split' = undefined
+split' _ [] = [[]]
+split' sep (x:xs)
+  | sep == x  = []:split' sep xs
+  | otherwise = (x:y):ys
+  where (y:ys) = split' sep xs
 
 -- ----------------------------------------
