@@ -146,7 +146,8 @@ inits' = foldr test []
 --
 
 join' :: a -> [[a]] -> [a]
-join' = undefined
+join' c (xs:[])  = xs
+join' c (xs:xss) = xs ++ [c] ++ join' c xss
 
 -- | splits the input into sublists at delimiter
 --   1. arg is the delimiter
