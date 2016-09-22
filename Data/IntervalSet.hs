@@ -39,6 +39,8 @@ merge  (x1, y1) (x2, y2) = (min x1 x2, max y1 y2)
 type IntervalSet = [Interval]
 
 inv :: IntervalSet -> Bool
+inv []     = True
+inv (x:[]) = not (nullInterval x)
 inv (x:y:[]) = not (overlap x y) && less x y && not (nullInterval x) && not (nullInterval y)
 inv (x:y:xs) = not (overlap x y) && less x y && not (nullInterval x) && inv (y:xs)
 
@@ -62,6 +64,8 @@ insertInterval n (x:xs)
 fromIntervalList :: [(Int, Int)] -> IntervalSet
 fromIntervalList  = foldr insertInterval []
 
+-- fromIntervalList = foldr union empty . map (uncurry singleInterval)
+
 
 -- ----------------------------------------
 --
@@ -82,7 +86,7 @@ union = foldr insertInterval
 
 member :: Int -> IntervalSet -> Bool
 member i = or . map isIn
-  where isIn (x, y) = x < i && i < y
+  where isIn (x, y) = x <= i && i <= y
 
 
 fromList :: [Int] -> IntervalSet
