@@ -76,16 +76,14 @@ splitAt' n (x : xs)
 
 -- 1. impl: direct or with map
 intercalate :: [a] -> [[a]] -> [a]
-intercalate ys []       = []
-intercalate ys (xs:[])  = xs
+intercalate _ []        = []
+intercalate _ (xs:[])   = xs
 intercalate ys (xs:xss) = xs ++ ys ++ intercalate ys xss
 
 -- 2. impl: with foldr
 -- after chapter about folds
 intercalate' :: [a] -> [[a]] -> [a]
-intercalate' ys (xs:xss) = undefined
-
-    -- foldr (\x -> (++) x) [] (xs:xss)
+intercalate' ys xss = foldr1 (\a b -> a ++ ys ++ b) xss
 
 -- ----------------------------------------
 
