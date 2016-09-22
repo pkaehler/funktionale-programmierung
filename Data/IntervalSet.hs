@@ -86,7 +86,8 @@ member i = or . map isIn
 
 
 fromList :: [Int] -> IntervalSet
-fromList = foldr insert empty
+fromList[]=empty
+fromList (x:xs) =   (insert x  (fromList xs))
 
 
 toList :: IntervalSet -> [Int]
