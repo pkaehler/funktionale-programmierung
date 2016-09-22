@@ -87,7 +87,7 @@ member i = or . map isIn
 
 fromList :: [Int] -> IntervalSet
 fromList[]=empty
-fromList (x:xs) =   (insert x  (fromList xs))
+fromList (x:xs) =  union (insertInterval (x,x) empty)  (fromList xs)
 
 
 toList :: IntervalSet -> [Int]

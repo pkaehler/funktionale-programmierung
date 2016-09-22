@@ -37,10 +37,14 @@ invTree (Bin l r) = invTree l && invTree r
 
 -- | smart constructor
 bin :: Tree a -> Tree a -> Tree a
-bin  = undefined
+bin Null b = b
+bin a Null = a
+bin l r = Bin l r
 
 instance Functor Tree where
-  fmap = undefined
+  fmap _ Null = Null
+  fmap f (Tip a) = Tip $ f a
+  fmap f (Bin l r) = Bin (fmap f l) (fmap f r)
 
 instance Applicative Tree where
   pure  = undefined
@@ -64,7 +68,9 @@ instance Monoid (Tree a) where
 
 -- fold elements like in a list from right to left
 instance Foldable Tree where
-  foldr _ e t = undefined
+  foldr _ e Null = e
+  foldr f e (Tip a) = f a e
+  foldr f e (Bin l r) = foldr f (foldr f e r) l
 
 -- ----------------------------------------
 -- classical visitor
