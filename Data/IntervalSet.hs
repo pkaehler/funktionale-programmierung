@@ -60,7 +60,7 @@ insertInterval n (x:xs)
 
 
 fromIntervalList :: [(Int, Int)] -> IntervalSet
-fromIntervalList  =foldr insertInterval []
+fromIntervalList  = foldr insertInterval []
 
 
 -- ----------------------------------------
