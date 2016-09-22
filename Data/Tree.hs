@@ -97,10 +97,16 @@ maxDepth = visitTree visitTree 0 (const 1) (\l r -> 1 + max l r)
 -- access functions
 
 viewL :: Tree a -> Maybe (a, Tree a)
-viewL = undefined
+viewL Null      = Nothing
+viewL (Tip x)   = Just (x, Null)
+viewL (Bin l r) = Just (head l, bin (tail l) r)
+
 
 viewR :: Tree a -> Maybe (Tree a, a)
-viewR = undefined
+viewR Null      = Nothing
+viewR (Tip x)   = Just (Null, x)
+viewR (Bin l r) = Just (bin (tail r) l, head r)
+
 
 head :: Tree a -> a
 head = maybe (error "head: empty tree") fst . viewL
