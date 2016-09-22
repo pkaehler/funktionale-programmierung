@@ -26,6 +26,8 @@ data Tree a
     | Bin (Tree a) (Tree a)
       deriving (Show, Data, Typeable)
 
+baum = Bin (Bin (Bin (Tip 1) (Tip 2)) (Tip 3)) (Bin (Bin (Tip 4) (Tip 5)) (Tip 6))
+
 -- | data type invariant
 
 invTree :: Tree a -> Bool
@@ -116,8 +118,8 @@ init = maybe (error "init: empty tree") fst . viewR
 -- conversions to/from lists
 
 -- | runs in O(n) due to the use of (:)
-toList :: Tree a -> [a]
-toList = foldr undefined undefined
+toList' :: Tree a -> [a]
+toList' = foldr (:) []
 
 -- | runs in O(n^2) due to the use of (++)
 toListSlow :: Tree a -> [a]
