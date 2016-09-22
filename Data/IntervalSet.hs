@@ -54,7 +54,10 @@ singleInterval x y
     | otherwise = []
 
 insertInterval :: Interval -> IntervalSet -> IntervalSet
-insertInterval n [] = [n]
+insertInterval n []
+  | inv [n] = [n]
+  | otherwise = []
+
 insertInterval n (x:xs)
   | overlap n x = merge n x : xs
   | less n x = n : x : xs
