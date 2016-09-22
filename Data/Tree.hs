@@ -80,9 +80,9 @@ instance Foldable Tree where
 visitTree :: b -> (a -> b) -> (b -> b -> b) -> Tree a -> b
 visitTree e tf bf = visit'
   where
-    visit' NULL =e
-    visit' (Tip a) =tf a
-    visit' (Bin l r)= bf (visit' l) (visit' r)
+    visit' Null = e
+    visit' (Tip a) = tf a
+    visit' (Bin l r) = bf (visit' l) (visit' r)
 
 -- special visitors
 
@@ -90,8 +90,8 @@ sizeTree :: Tree a -> Int
 sizeTree = visitTree 0 (const 1) (+)
 
 minDepth, maxDepth :: Tree a -> Int
-minDepth = visitTree visitTree 0 (const 1) (\l r -> 1 + min l r)
-maxDepth = visitTree visitTree 0 (const 1) (\l r -> 1 + max l r)
+minDepth = visitTree 0 (const 1) (\l r -> 1 + min l r)
+maxDepth = visitTree 0 (const 1) (\l r -> 1 + max l r)
 
 -- ----------------------------------------
 -- access functions
@@ -129,7 +129,7 @@ toList' = foldr (:) []
 
 -- | runs in O(n^2) due to the use of (++)
 toListSlow :: Tree a -> [a]
-toListSlow = visitTree undefined undefined undefined
+toListSlow = visitTree [] (:[]) (++)
 
 -- | build a balanced tree
 --
