@@ -137,7 +137,10 @@ toListSlow = visitTree [] (:[]) (++)
 
 -- weak balancing criterion
 fromList :: [a] -> Tree a
-fromList = undefined
+fromList []       = Null
+fromList (x:[])   = Tip x
+fromList (x:y:[]) = Bin (Tip x) (Tip y)
+fromList (x:xs)   = Bin (Tip x) (fromList xs)
 
 -- strong balancing criterion
 fromList' :: [a] -> Tree a
