@@ -26,7 +26,7 @@ data Tree a
     | Bin (Tree a) (Tree a)
       deriving (Show, Data, Typeable)
 
-baum = Bin (Bin (Tip 1) (Tip 2)) (Tip 3)
+baum = Bin (Bin (Bin (Tip 1) (Tip 2)) (Tip 3)) (Bin (Bin (Tip 4) (Tip 5)) (Tip 6))
 
 -- | data type invariant
 
@@ -100,7 +100,10 @@ viewL (Tip x)   = Just (x, Null)
 viewL (Bin l r) = Just (head l, bin (tail l) r)
 
 viewR :: Tree a -> Maybe (Tree a, a)
-viewR = undefined
+viewR Null      = Nothing
+viewR (Tip x)   = Just (Null, x)
+viewR (Bin l r) = Just (bin (tail r) l, head r)
+
 
 head :: Tree a -> a
 head = maybe (error "head: empty tree") fst . viewL
