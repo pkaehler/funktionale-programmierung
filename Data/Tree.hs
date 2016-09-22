@@ -26,8 +26,6 @@ data Tree a
     | Bin (Tree a) (Tree a)
       deriving (Show, Data, Typeable)
 
-baum = Bin (Bin (Bin (Tip 1) (Tip 2)) (Tip 3)) (Bin (Bin (Tip 4) (Tip 5)) (Tip 6))
-
 -- | data type invariant
 
 invTree :: Tree a -> Bool
@@ -80,30 +78,27 @@ instance Foldable Tree where
 visitTree :: b -> (a -> b) -> (b -> b -> b) -> Tree a -> b
 visitTree e tf bf = visit'
   where
-    visit' = undefined
+    visit' NULL =e
+    visit' (Tip a) =tf a
+    visit' (Bin l r)= bf (visit' l) (visit' r)
 
 -- special visitors
 
 sizeTree :: Tree a -> Int
-sizeTree = visitTree undefined undefined undefined
+sizeTree = visitTree 0 (const 1) (+)
 
 minDepth, maxDepth :: Tree a -> Int
-minDepth = visitTree undefined undefined undefined
-maxDepth = visitTree undefined undefined undefined
+minDepth = visitTree visitTree 0 (const 1) (\l r -> 1 + min l r)
+maxDepth = visitTree visitTree 0 (const 1) (\l r -> 1 + max l r)
 
 -- ----------------------------------------
 -- access functions
 
 viewL :: Tree a -> Maybe (a, Tree a)
-viewL Null      = Nothing
-viewL (Tip x)   = Just (x, Null)
-viewL (Bin l r) = Just (head l, bin (tail l) r)
+viewL = undefined
 
 viewR :: Tree a -> Maybe (Tree a, a)
-viewR Null      = Nothing
-viewR (Tip x)   = Just (Null, x)
-viewR (Bin l r) = Just (bin (tail r) l, head r)
-
+viewR = undefined
 
 head :: Tree a -> a
 head = maybe (error "head: empty tree") fst . viewL
