@@ -26,6 +26,8 @@ data Tree a
     | Bin (Tree a) (Tree a)
       deriving (Show, Data, Typeable)
 
+baum = Bin (Bin (Tip 1) (Tip 2)) (Tip 3)
+
 -- | data type invariant
 
 invTree :: Tree a -> Bool
@@ -93,7 +95,9 @@ maxDepth = visitTree undefined undefined undefined
 -- access functions
 
 viewL :: Tree a -> Maybe (a, Tree a)
-viewL = undefined
+viewL Null      = Nothing
+viewL (Tip x)   = Just (x, Null)
+viewL (Bin l r) = Just (head l, bin (tail l) r)
 
 viewR :: Tree a -> Maybe (Tree a, a)
 viewR = undefined
