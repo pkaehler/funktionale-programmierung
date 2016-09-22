@@ -52,11 +52,11 @@ singleInterval x y
     | otherwise = []
 
 insertInterval :: Interval -> IntervalSet -> IntervalSet
-insertInterval x [] = [x]
-insertInterval x (n:xs)
-  | overlap x n = merge x n : xs
-  | less x n = x : n : xs
-  | otherwise = n : insertInterval x xs
+insertInterval n [] = [n]
+insertInterval n (x:xs)
+  | overlap n x = merge n x : xs
+  | less n x = n : x : xs
+  | otherwise = x : insertInterval n xs
 
 
 fromIntervalList :: [(Int, Int)] -> IntervalSet
@@ -77,19 +77,21 @@ insert :: Int -> IntervalSet -> IntervalSet
 insert i = insertInterval (i, i)
 
 union :: IntervalSet -> IntervalSet -> IntervalSet
-union = undefined
+union = foldr insertInterval
 
 
 member :: Int -> IntervalSet -> Bool
-member = undefined
+member i = or . map isIn
+  where isIn (x, y) = x < i && i < y
 
 
 fromList :: [Int] -> IntervalSet
-fromList = undefined
+fromList = foldr insert empty
 
 
 toList :: IntervalSet -> [Int]
-toList = undefined
+toList = concat . map (uncurry upto)
+  where upto x y = [x..y]
 
 
 -- ----------------------------------------
