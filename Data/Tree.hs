@@ -124,8 +124,8 @@ init = maybe (error "init: empty tree") fst . viewR
 -- conversions to/from lists
 
 -- | runs in O(n) due to the use of (:)
-toList' :: Tree a -> [a]
-toList' = foldr (:) []
+toList :: Tree a -> [a]
+toList = foldr (:) []
 
 -- | runs in O(n^2) due to the use of (++)
 toListSlow :: Tree a -> [a]
@@ -144,7 +144,9 @@ fromList (x:xs)   = Bin (Tip x) (fromList xs)
 
 -- strong balancing criterion
 fromList' :: [a] -> Tree a
-fromList' = undefined
+fromList' xs = Bin (fromList' l) (fromList' r)
+             where
+             (l,r) = splitAt ((length xs) `div` 2) xs
 
 -- list to the right
 fromList'' :: [a] -> Tree a
