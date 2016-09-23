@@ -16,8 +16,12 @@ type Idents = Set Ident
 freeVars :: Expr -> Idents
 freeVars
   = visit $
-    undefined
-    
+    V {vLit   = \b -> S.empty
+    , vVar    = \i -> S.singleton i
+    , vUnary  = \op1 k1 -> k1
+    , vBinary = \op2 k2 k3 -> S.union k2 k3 
+    }
+
 type VarEnv = [(Ident, Expr)]
 
 substVars :: VarEnv -> Expr -> Expr
