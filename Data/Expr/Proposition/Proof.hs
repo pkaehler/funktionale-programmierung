@@ -26,7 +26,17 @@ truthTable n = map (True:) t' ++ map (False:) t'
 
 proof' :: Expr -> Maybe VarEnv
 proof' e
-  = undefined
+= listToMaybe .filter (\env ->not. eval. substVars env (e)) envs
+  where
+    vs= freeVars e
+    tt= truthTable (Length vs)
+    envs = map toEnv tt
+    where
+      toEnv bs = zipWith (\x y -> (x,bool v))vs bs
+
+
+
+
 
 
 proof :: Expr -> String
