@@ -144,17 +144,10 @@ fromList (x:xs)   = Bin (Tip x) (fromList xs)
 
 -- strong balancing criterion
 fromList' :: [a] -> Tree a
-<<<<<<< HEAD
 fromList' [] = Null
 fromList' [x] = Tip x
 fromList' xs = bin (fromList' x) (fromList' y)
   where (x, y) = splitAt (div (length xs) 2) xs
-
-=======
-fromList' xs = Bin (fromList' l) (fromList' r)
-             where
-             (l,r) = splitAt ((length xs) `div` 2) xs
->>>>>>> a9f0df60dbbf4bddf82ac9557a60736babaf948f
 
 -- list to the right
 fromList'' :: [a] -> Tree a
