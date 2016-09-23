@@ -65,8 +65,8 @@ instance MonadPlus Tree where
   mplus = undefined
 
 instance Monoid (Tree a) where
-  mempty  = undefined
-  mappend = undefined
+  mempty  = Null
+  mappend = Bin
 
 -- fold elements like in a list from right to left
 instance Foldable Tree where
@@ -144,7 +144,11 @@ fromList (x:xs)   = Bin (Tip x) (fromList xs)
 
 -- strong balancing criterion
 fromList' :: [a] -> Tree a
-fromList' = undefined
+fromList' [] = Null
+fromList' [x] = Tip x
+fromList' xs = bin (fromList' x) (fromList' y)
+  where (x, y) = splitAt (div (length xs) 2) xs
+
 
 -- list to the right
 fromList'' :: [a] -> Tree a
