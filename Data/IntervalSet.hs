@@ -65,9 +65,11 @@ insertInterval n (x:xs)
 
 
 fromIntervalList :: [(Int, Int)] -> IntervalSet
-fromIntervalList  = foldr insertInterval []
+fromIntervalList = foldr union empty . map (uncurry singleInterval)
 
--- fromIntervalList = foldr union empty . map (uncurry singleInterval)
+-- fromIntervalList = foldr union map (uncurry singleInterval) >>> empty
+-- fromIntervalList  = foldr insertInterval []
+
 
 
 -- ----------------------------------------
