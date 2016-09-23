@@ -14,7 +14,7 @@ data Visitor r
 
 idExpr :: Visitor Expr
 idExpr
-  = undefined
+  = V Lit Var Unary Binary
 
 visit :: Visitor r -> Expr -> r
 visit v (Lit b) = vLit v b
