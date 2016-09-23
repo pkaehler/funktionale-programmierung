@@ -10,7 +10,7 @@ import           Test.QuickCheck
 -- invariant test: list of elems as input
 
 prop_inv0 :: [Int] -> Bool
-prop_inv0 = inv.fromList --undefined
+prop_inv0 = inv.fromList 
 
 
 -- invariant test: list of pairs

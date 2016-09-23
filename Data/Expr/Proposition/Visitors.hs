@@ -27,23 +27,23 @@ type VarEnv = [(Ident, Expr)]
 substVars :: VarEnv -> Expr -> Expr
 substVars env
   = visit $
-      V {vLit   = Lit
-      , vVar    = \x -> case lookup x env of
-                        Nothing -> Var x
-                        Just a -> a
-      , vUnary  = Unary
-      , vBinary = Binary
-      }
+  V {vLit   = Lit
+  , vVar    = \i->   case lookup x  env of
+                          Nothing -> Var x
+                          just a -> Var a
+  , vUnary  = Unary
+  , vBinary = Binary
+  }
 
 eval :: Expr -> Bool
 eval
-  = visit $ --undefined
-      V {vLit   = Lit
-      , vVar    = \x -> case lookup x env of
-                        Nothing -> Var x
-                        Just a -> a
-      , vUnary  = Unary
-      , vBinary = Binary
-      }
+  = visit $
+  V {vLit   = Lit
+  , vVar    = \i->   case lookup x  env of
+                          Nothing -> Var x
+                          just a -> Var a
+  , vUnary  = Unary
+  , vBinary = Binary
+  }
 
 -- ----------------------------------------

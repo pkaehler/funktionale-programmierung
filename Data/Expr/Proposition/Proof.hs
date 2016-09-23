@@ -12,7 +12,9 @@ import           Data.Maybe                       (listToMaybe)
 -- ----------------------------------------
 
 truthTable :: Int -> [[Bool]]
-truthTable n = undefined
+truthTable n = truthTable 0 = [[]]
+truthTable n = map (True:) t' ++ map (False:) t'
+  where t' = truthTable (n - 1)
 
 -- compute a proof by generating a truth table,
 -- iterate over all rows in the table
