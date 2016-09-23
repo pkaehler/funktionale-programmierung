@@ -37,7 +37,13 @@ substVars env
 
 eval :: Expr -> Bool
 eval
-  = visit $
-    undefined
+  = visit $ --undefined
+      V {vLit   = Lit
+      , vVar    = \x -> case lookup x env of
+                        Nothing -> Var x
+                        Just a -> a
+      , vUnary  = Unary
+      , vBinary = Binary
+      }
 
 -- ----------------------------------------
