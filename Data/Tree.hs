@@ -71,7 +71,7 @@ instance Monoid (Tree a) where
 -- fold elements like in a list from right to left
 instance Foldable Tree where
   foldr _ e Null = e
-  foldr f e (Tip a) = f a
+  foldr f e (Tip a) = f a e
   foldr f e (Bin l r) = foldr f (foldr f e r) l
 
 -- ----------------------------------------
