@@ -12,7 +12,7 @@ import           Data.Maybe                       (listToMaybe)
 -- ----------------------------------------
 
 truthTable :: Int -> [[Bool]]
-truthTable n = truthTable 0 = [[]]
+truthTable n = [[]]
 truthTable n = map (True:) t' ++ map (False:) t'
   where t' = truthTable (n - 1)
 
@@ -26,14 +26,13 @@ truthTable n = map (True:) t' ++ map (False:) t'
 
 proof' :: Expr -> Maybe VarEnv
 proof' e
-= listToMaybe .filter (\env ->not. eval. substVars env (e)) envs
+  = listToMaybe . filter (\x -> not . eval . substVars x $ e) $ envs
   where
       vs = freeVars e
       tt = truthTable (length vs)
       envs = map toEnv tt
           where
               toEnv bs = zipWith (\x v -> (x, bool v)) vs bs
-
 
 
 
