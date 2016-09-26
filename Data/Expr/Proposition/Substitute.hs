@@ -3,6 +3,7 @@ module Data.Expr.Proposition.Substitute where
 import Data.List      (union)
 
 import Data.Expr.Proposition.Types
+import Data.Expr.Proposition.Visit
 
 -- ----------------------------------------
 -- variable substitution
@@ -10,17 +11,25 @@ import Data.Expr.Proposition.Types
 type VarEnv = [(Ident, Expr)]
 
 substVars :: VarEnv -> Expr -> Expr
-substVars _ x@(Lit _)         = x
-substVars env (Var a)         = snd . head . filter ((==a) . fst) $ env
-substVars env (Unary op a)    = Unary op (substVars env a)
-substVars env (Binary op a b) = Binary op (substVars env a) (substVars env b)
+
+substVars env
+    = visit $
+        V {vLit   = Lit
+        , vVar    = \x -> case lookup x env of
+                          Nothing -> Var x
+                          Just a -> a
+        , vUnary  = Unary
+        , vBinary = Binary
+        }
 
 freeVars :: Expr -> [Ident]
-freeVars (Lit _)        = []
-freeVars (Var a)        = [a]
-freeVars (Unary _ a)    = freeVars a
-freeVars (Binary _ a b) = union (freeVars a) (freeVars b)
-
+freeVars
+    = visit $
+      V {vLit   = \b -> []
+      , vVar    = \i -> [i]
+      , vUnary  = \op1 k1 -> k1
+      , vBinary = \op2 k2 k3 -> k2 ++ k3
+      }
 
 
 -- ----------------------------------------
