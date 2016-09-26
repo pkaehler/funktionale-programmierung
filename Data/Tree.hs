@@ -53,8 +53,10 @@ instance Applicative Tree where
   (<*>) = undefined
 
 instance Monad Tree where
-  return     = undefined
-  _    >>= _ = undefined
+  return     = Tip
+  Null      >>= _ = Null
+  (Tip a)   >>= f = f a
+  (Bin l r) >>= f = Bin (l >>= f) (r >>= f)
 
 instance Alternative Tree where
   empty = mzero   -- or Null
