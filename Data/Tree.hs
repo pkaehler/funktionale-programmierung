@@ -49,8 +49,9 @@ instance Functor Tree where
   fmap f (Bin l r) = Bin (fmap f l) (fmap f r)
 
 instance Applicative Tree where
-  pure  = undefined
-  (<*>) = undefined
+  pure             = Tip
+  (Tip f) <*> tx   = fmap f tx
+  (Bin l r) <*> tx = Bin (l <*> tx) (r <*> tx)
 
 instance Monad Tree where
   return     = Tip
