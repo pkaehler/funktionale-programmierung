@@ -21,7 +21,7 @@ data Value
   = B Bool
   | I Integer
     deriving (Eq, Ord, Show)
-             
+
 instance Pretty Value where
   pretty (B b) = pretty b
   pretty (I i) = pretty i
@@ -42,31 +42,34 @@ data Result a
     deriving (Show)
 
 instance Functor Result where
-  fmap = undefined
+  fmap f (R val) = R $ f val
+  fmap _ (E msg) = E msg
 
 instance Applicative Result where
   pure = return
   (<*>) = ap
-  
+
 instance Monad Result where
-  return = undefined
-  (>>=) = undefined
+  return = r
+  (>>=) (R val) f = f val
+  (>>=) (E val) _ = E val
 
 instance MonadError EvalError Result where
-  throwError = undefined
-  catchError = undefined
-  
+  throwError = E
+  catchError (R x) _ = R x
+  catchError (E err) f = f err
+
 instance (Pretty a) => Pretty (Result a) where
   pretty (R x) = pretty x
   pretty (E e) = "error: " ++ pretty e
 
 -- ----------------------------------------
 -- error handling
-  
+
 data EvalError
   = FreeVar String
   | NotImpl String
-  | ValErr  String Value 
+  | ValErr  String Value
   | Div0
   | Mzero
   deriving (Show)
@@ -96,21 +99,30 @@ div0  = throwError Div0
 -- ----------------------------------------
 
 eval :: Expr -> Result Value
-eval (BLit b)          = undefined
-eval (ILit i)          = undefined
-eval (Var    x)        = undefined
-eval (Unary  op e1)    = undefined
-eval (Binary op e1 e2) = undefined
-eval (Cond   c e1 e2)  = undefined
-eval (Let _x _e1 _e2)  = undefined
+eval (BLit b)          = return (B b)
+eval (ILit i)          = return(I i)
+eval (Var    x)        = freeVar $ unwords ["free variable", show x, "in expression"]
+eval (Unary  op e1)    = do v1 <- eval e1
+                            mf1 op v1
+
+eval (Binary op e1 e2) =  do v1 <- eval e1
+                            v2 <- eval e2
+                            mf2 op v1 v2
+
+eval (Cond   c e1 e2)  = do b <- evalBool c
+                            if b
+                              then eval e1
+                              else eval e2
+
+eval (Let _x _e1 _e2)  = notImpl "let expression not implemented"
 
 evalBool :: Expr -> Result Bool
 evalBool e
   = do r <- eval e
        case r of
         (B b) -> return b
-        _     -> undefined
-  
+        (I i) -> boolExpected (I i)
+
 -- ----------------------------------------
 -- MF: Meaning function
 
@@ -122,20 +134,20 @@ mf1 ToInt      = op1BI (toInteger . fromEnum)
 mf1 UPlus      = op1II id
 mf1 UMinus     = op1II (0 -)
 mf1 Signum     = op1II signum
-mf1 op         = undefined
-  
+mf1 UPlusMinus = \_ -> notImpl "+/- not yet implemented"
+
+
 op1BB :: (Bool -> Bool) -> MF1
 op1BB op (B b) = return $ B (op b)
-op1BB _  v     = undefined
+op1BB _  v     = throwError $ ValErr "illegal operand with Bool -> bool op" v
 
 op1II :: (Integer -> Integer) -> MF1
 op1II op (I i) = return (I (op i))
-op1II _  v     = undefined
+op1II _  v     = throwError $ ValErr "illegal operand with Integer -> Integer op" v
 
 op1BI :: (Bool -> Integer) -> MF1
 op1BI op (B b) = return (I (op b))
-op1BI _  v     = undefined
-
+op1BI _  v     = throwError $ ValErr "illegal operand with Bool -> Integer op" v
 -- ----------------------------------------
 
 type MF2 = Value -> Value -> Result Value
@@ -161,19 +173,30 @@ mf2 op        = \ _ _ -> notImpl (pretty op)
 
 op2BBB :: (Bool -> Bool -> Bool) -> MF2
 op2BBB op (B b1) (B b2) = return (B (b1 `op` b2))
-op2BBB _  v1     v2     = undefined
+op2BBB _  v1     v2
+    | not (isB v1) = boolExpected v1
+    | otherwise    = boolExpected v2
+
 
 op2III :: (Integer -> Integer -> Integer) -> MF2
 op2III op (I i1) (I i2) = return (I (i1 `op` i2))
-op2III _  v1      v2    = undefined
+op2III _  v1      v2
+    | not (isI v1) = intExpected v1
+    | otherwise    = intExpected v2
+
+
 
 op2IIB :: (Integer -> Integer -> Bool) -> MF2
 op2IIB op (I i1) (I i2) = return (B (i1 `op` i2))
-op2IIB _  v1      v2    = undefined
-
+op2IIB _  v1      v2
+| not (isI v1) = intExpected v1
+| otherwise    = intExpected v2
 
 divIII :: (Integer -> Integer -> Integer) -> MF2
-divIII op (I x) (I y)   = undefined
-divIII _  v1      v2    = undefined
+divIII _ (I _) (I 0)   = div0
+divIII _ (I x) (I y)   = return (I $ div x y)
+divIII _  v1      v2
+  | not (isI v1)  = intExpected v1
+  | otherwise     = intExpected v2
 
 -- ----------------------------------------
