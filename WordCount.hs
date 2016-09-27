@@ -12,6 +12,7 @@ import qualified Data.List          as L
 -- the working horse
 -- with predefined type Sum for (+,0) monoid
 import           Data.Monoid
+import          Data.Char
 
 -- the more effizent Text representation
 -- than the native String type

@@ -24,7 +24,7 @@ data Value
   = B Bool
   | I Integer
     deriving (Eq, Ord, Show)
-             
+
 instance Pretty Value where
   pretty (B b) = pretty b
   pretty (I i) = pretty i
@@ -53,7 +53,7 @@ isE (E _) = True
 isE _     = False
 
 instance Functor Result where
-  fmap = undefined
+  fmap = 
 
 instance Applicative Result where
   pure = return
@@ -62,16 +62,16 @@ instance Applicative Result where
 -- ----------------------------------------
 -- there are different implementations of
 -- the monad ops
---          
+--
 -- the pessimistic approach:
 -- if a single error occurs, the whole computation fails
 -- if no errors occur, there is at least one result,
--- the list will never be empty 
+-- the list will never be empty
 --
 -- the optimistic approach:
 -- if there's at least a single real result
 -- possible errors are ignored
--- 
+--
 -- test case e11 in EvalSimple
 
 instance Monad Result where
@@ -84,23 +84,23 @@ instance Alternative Result where
 
 -- the @Mzero@ error case is catched by @mplus@
 -- all other errors are propagated
-  
+
 instance MonadPlus Result where
   mzero = E Mzero
   mplus = undefined
-  
+
 instance MonadError EvalError Result where
   throwError = E
   catchError r@(R _) _ = r
   catchError   (E e) f = f e
-  
+
 instance (Pretty a) => Pretty (Result a) where
   pretty (R x) = pretty x
   pretty (E e) = "error: " ++ pretty e
 
 -- ----------------------------------------
 -- error handling
-  
+
 data EvalError
   = FreeVar String
   | NotImpl String
@@ -176,7 +176,7 @@ checkMixed x@(R vs)
     = x
   | otherwise
     = mixedValues vs
-      
+
 -- ----------------------------------------
 -- MF: Meaning function
 
@@ -218,7 +218,7 @@ isStrict op
     , Eq, Neq, Gr, Ge, Ls, Le
     , PlusMinus, Alt
     ]
-    
+
 type MF2 = Value -> Value -> Result Value
 
 mf2 :: Op2 -> MF2

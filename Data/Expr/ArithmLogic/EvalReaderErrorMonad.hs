@@ -28,7 +28,7 @@ data Value
   = B Bool
   | I Integer
     deriving (Eq, Ord, Show)
-             
+
 instance Pretty Value where
   pretty (B b) = pretty b
   pretty (I i) = pretty i
@@ -44,7 +44,7 @@ isI _     = False
 -- ----------------------------------------
 --
 -- the Value / Error sum type
-  
+
 data ResVal a
   = R { resVal :: a}
   | E { resErr :: EvalError }
@@ -57,7 +57,7 @@ instance Functor ResVal where
 instance Applicative ResVal where
   pure = return
   (<*>) = ap
-  
+
 instance Monad ResVal where
   return = R
   R x >>= f = f x
@@ -67,7 +67,7 @@ instance MonadError EvalError ResVal where
   throwError = E
   catchError r@(R _) _ = r
   catchError   (E e) f = f e
-  
+
 instance (Pretty a) => Pretty (ResVal a) where
   pretty (R x) = pretty x
   pretty (E e) = "error: " ++ pretty e
@@ -80,32 +80,33 @@ newtype Result a = RR { unRR :: Env -> ResVal a }
 
 instance Functor Result where
   fmap = undefined
-  
+
 instance Applicative Result where
   pure = return
   (<*>) = ap
 
 instance Monad Result where
-  return = undefined
-  (>>=)  = undefined
-  
+  return a = RR $ \_ -> return a
+  (>>=) m k = RR $ \env -> do v <- (unRR m) env
+                              unRR (k v) env
+
 instance MonadError EvalError Result where
   throwError e
-    = undefined
+      = RR $ \_ -> throwError e
   catchError (RR ef) handler
     = undefined
 
 instance MonadReader Env Result where
-  ask             = undefined
-  local f (RR ef) = undefined
+   ask             = RR $ return
+   local f (RR ef) = RR $ ef . f
 
 -- ----------------------------------------
 -- error handling
-  
+
 data EvalError
   = FreeVar String
   | NotImpl String
-  | ValErr  String Value 
+  | ValErr  String Value
   | Div0
   deriving (Show)
 
@@ -138,20 +139,21 @@ eval' e = (unRR . eval) e M.empty -- start with an empty environment
 eval :: Expr -> Result Value
 eval (BLit b)          = return (B b)
 eval (ILit i)          = return (I i)
-eval (Var    x)        = undefined
+eval (Var    x)        =  do v <- asks $ M.lookup x
+                            maybe (freeVar x) return v
 eval (Unary  op e1)    = do v1  <- eval e1
                             mf1 op v1
 
 eval (Binary op e1 e2) = do v1  <- eval e1
                             v2  <- eval e2
                             mf2 op v1 v2
-                            
+
 eval (Cond   c e1 e2)  = do b <- evalBool c
                             if b
                               then eval e1
                               else eval e2
 
-eval (Let x e1 e2)     = undefined
+eval (Let x e1 e2)     =
 
 evalBool :: Expr -> Result Bool
 evalBool e
@@ -161,7 +163,7 @@ evalBool e
         _     -> boolExpected r
 
 -- ----------------------------------------
-        
+
 type MF1 = Value -> Result Value
 
 mf1 :: Op1 -> MF1
@@ -171,7 +173,7 @@ mf1 UPlus      = op1II id
 mf1 UMinus     = op1II (0 -)
 mf1 Signum     = op1II signum
 mf1 op         = \ _ -> notImpl (pretty op)
-  
+
 op1BB :: (Bool -> Bool) -> MF1
 op1BB op (B b) = return $ B (op b)
 op1BB _  v     = boolExpected v
