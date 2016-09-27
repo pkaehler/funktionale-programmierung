@@ -53,7 +53,9 @@ isE (E _) = True
 isE _     = False
 
 instance Functor Result where
-  fmap = 
+  fmap =
+    fmap f (R x) = R (f x)
+    fmap _ (E e) = E e
 
 instance Applicative Result where
   pure = return
@@ -75,8 +77,9 @@ instance Applicative Result where
 -- test case e11 in EvalSimple
 
 instance Monad Result where
-  return = undefined
-  (>>=)  = undefined
+  return a= R $ \_ -> return a
+  (>>=) (R val) f = f val
+  (>>=) (E val) _ = E val
 
 instance Alternative Result where
   empty = mzero
