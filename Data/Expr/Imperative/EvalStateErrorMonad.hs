@@ -204,7 +204,7 @@ eval (Unary preOp e)
 eval (Unary postOp e)
   | postOp `elem` [PostIncr, PostDecr]
 
-                       = do do ident <- evalLValue e
+                       =  do ident <- evalLValue e
                        value <- readVar ident
                        incremented <- mf1 postOp value
                        writeVar ident incremented
@@ -218,16 +218,17 @@ eval (Binary Assign lhs rhs)
                        = do undefined  -- use evalLValue, writeVar
 
 eval (Binary Seq e1 e2)
-                       = do undefined
+                        = eval e1 << eval e2
+
 
 eval (Binary And e1 e2)
                        = eval (cond e1 e2 false)
 
 eval (Binary Or  e1 e2)
-                       = undefined -- similar to And
+                       = eval (cond e1  true e2) -- similar to And
 
 eval (Binary Impl e1 e2)
-                       = undefined -- similar to And
+                       = --eval(cond e1 e2) -- similar to And
 
 eval (Binary op e1 e2)
   | isStrict op        = do v1 <- eval e1
