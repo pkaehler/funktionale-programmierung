@@ -20,7 +20,7 @@ import qualified Data.Map  as M
 
 -- ----------------------------------------
 -- evaluation of simple imperative programs
--- 
+--
 -- this is an example for using the state monad
 -- the evaluator is derived out of the reader/error
 -- evaluator in ArithmLogic dir
@@ -33,7 +33,7 @@ data Value
   = B Bool
   | I Integer
     deriving (Eq, Ord, Show)
-             
+
 instance Pretty Value where
   pretty (B b) = pretty b
   pretty (I i) = pretty i
@@ -49,7 +49,7 @@ isI _     = False
 -- ----------------------------------------
 --
 -- the Value / Error sum type
-  
+
 data ResVal a
   = R { resVal :: a}
   | E { resErr :: EvalError }
@@ -62,7 +62,7 @@ instance Functor ResVal where
 instance Applicative ResVal where
   pure = return
   (<*>) = ap
-  
+
 instance Monad ResVal where
   return = R
   R x >>= f = f x
@@ -72,7 +72,7 @@ instance MonadError EvalError ResVal where
   throwError = E
   catchError r@(R _) _ = r
   catchError   (E e) f = f e
-  
+
 instance (Pretty a) => Pretty (ResVal a) where
   pretty (R x) = pretty x
   pretty (E e) = "error: " ++ pretty e
@@ -82,9 +82,10 @@ instance (Pretty a) => Pretty (ResVal a) where
 newtype Result a = RT { runResult :: Store -> (ResVal a, Store) }
 
 instance Functor Result where
-  fmap f (RT sf)
-    = undefined
-      
+  fmap f (RT sf) = RT $ \store -> let (a, store1) = sf store
+                                  in (fmap f a, store1)
+
+
 instance Applicative Result where
   pure  = return
   (<*>) = ap
@@ -99,7 +100,7 @@ instance Monad Result where
 instance MonadError EvalError Result where
   throwError e
     = undefined
-  
+
   catchError (RT sf) handler
     = undefined
 
@@ -109,11 +110,11 @@ instance MonadState Store Result where
 
   put st
     = undefined
-  
+
 -- ----------------------------------------
 --
 -- variable store
-  
+
 newtype Store = Store (M.Map Ident Value)
               deriving (Show)
 
@@ -123,7 +124,7 @@ instance Pretty Store where
     where
       pretty' (i, v) = i ++ " :-> " ++ pretty v
       vars = M.toList m
-      
+
 emptyStore :: Store
 emptyStore = Store M.empty
 
@@ -135,11 +136,11 @@ insert i v (Store m) = Store $ M.insert i v m
 
 -- ----------------------------------------
 -- error handling
-  
+
 data EvalError
   = UndefVar String
   | NotImpl String
-  | ValErr  String Value 
+  | ValErr  String Value
   | Div0
   | NoLValue Expr
   deriving (Show)
@@ -150,7 +151,7 @@ instance Pretty EvalError where
   pretty (ValErr e g) = e ++ " value expected, but got: " ++ pretty g
   pretty Div0         = "divide by zero"
   pretty (NoLValue e) = "no lvalue: " ++ pretty e
-  
+
 boolExpected :: Value -> Result a
 boolExpected = throwError . ValErr "Bool"
 
@@ -179,7 +180,7 @@ eval (BLit b)          = return (B b)
 eval (ILit i)          = return (I i)
 
 eval (Var    i)        = undefined
-                         
+
 eval (Unary preOp e)
   | preOp `elem` [PreIncr, PreDecr]
                        = do undefined
@@ -187,7 +188,7 @@ eval (Unary preOp e)
 eval (Unary postOp e)
   | postOp `elem` [PostIncr, PostDecr]
                        = do undefined  -- use evalLValue, readVar, writeVar
-                        
+
 eval (Unary  op e1)    = do v1  <- eval e1
                             mf1 op v1
 
@@ -196,7 +197,7 @@ eval (Binary Assign lhs rhs)
 
 eval (Binary Seq e1 e2)
                        = do undefined
-                            
+
 eval (Binary And e1 e2)
                        = eval (cond e1 e2 false)
 
@@ -212,7 +213,7 @@ eval (Binary op e1 e2)
                             mf2 op v1 v2
 
 eval (Binary op _ _)   = notImpl ("operator " ++ pretty op)
-                         
+
 eval (Cond   c e1 e2)  = do b <- evalBool c
                             if b
                               then eval e1
@@ -222,7 +223,7 @@ eval e@(While c body)   = do undefined
 
 eval (Read _)           = notImpl "read"  -- needs IO
 eval (Write _ _)        = notImpl "write" -- needs IO
-                          
+
 evalBool :: Expr -> Result Bool
 evalBool e
   = do r <- eval e
@@ -263,7 +264,7 @@ mf1 PreDecr    = undefined -- similar to PreIncr
 mf1 PostIncr   = undefined -- similar to PreIncr
 mf1 PostDecr   = undefined -- similar to PreIncr
 -- mf1 op         = \ _ -> notImpl (show op)
-  
+
 op1BB :: (Bool -> Bool) -> MF1
 op1BB op (B b) = return $ B (op b)
 op1BB _  v     = boolExpected v
@@ -287,7 +288,7 @@ isStrict op
     , Plus, Minus, Mult, Div, Mod
     , Eq, Neq, Gr, Ge, Ls, Le
     ]
-    
+
 mf2 :: Op2 -> MF2
 mf2 And       = op2BBB (&&)
 mf2 Or        = op2BBB (||)
