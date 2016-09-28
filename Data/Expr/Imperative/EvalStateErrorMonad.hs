@@ -9,7 +9,7 @@ import Prelude hiding (lookup)
 import Control.Applicative (Applicative(..))
 import Control.Monad
 import Control.Monad.Except
-import Control.Monad.State
+import Control.Monad.ST
 
 import Data.Expr.Imperative.Types
 import Data.Expr.Imperative.Constr
@@ -189,8 +189,11 @@ eval (Var    i)        = undefined
 
 eval (Unary preOp e)
   | preOp `elem` [PreIncr, PreDecr]
-                       = do undefined
-
+                        = do ident <- evalLValue e
+                        value <- readVar ident
+                        incremented <- mf1 preOp value
+                        writeVar ident incremented
+                        return incremented
 eval (Unary postOp e)
   | postOp `elem` [PostIncr, PostDecr]
                        = do undefined  -- use evalLValue, readVar, writeVar
