@@ -92,24 +92,30 @@ instance Applicative Result where
 
 instance Monad Result where
   return x
-    = undefined
+    = RT $ \store -> (return x, store)
 
   RT sf >>= f
-    = undefined
+    = RT $ \store ->
+           let (a,store1) = sf store
+           in
+             case a of
+                 E e -> (E e, store1)
+                 R v -> let RT sf2 = f v
+                        in sf2 store1
 
 instance MonadError EvalError Result where
   throwError e
-    = undefined
+    = RT $ \store -> (throwError e,store)
 
   catchError (RT sf) handler
     = undefined
 
 instance MonadState Store Result where
   get
-    = undefined
+    = RT $ \store -> (return store, store)
 
   put st
-    = undefined
+    = RT $ \store -> (return (), st)
 
 -- ----------------------------------------
 --
