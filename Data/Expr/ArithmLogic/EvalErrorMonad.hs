@@ -50,7 +50,7 @@ instance Applicative Result where
   (<*>) = ap
 
 instance Monad Result where
-  return = r
+  return = R
   (>>=) (R val) f = f val
   (>>=) (E val) _ = E val
 
@@ -106,8 +106,8 @@ eval (Unary  op e1)    = do v1 <- eval e1
                             mf1 op v1
 
 eval (Binary op e1 e2) =  do v1 <- eval e1
-                            v2 <- eval e2
-                            mf2 op v1 v2
+                             v2 <- eval e2
+                             mf2 op v1 v2
 
 eval (Cond   c e1 e2)  = do b <- evalBool c
                             if b
@@ -189,8 +189,8 @@ op2III _  v1      v2
 op2IIB :: (Integer -> Integer -> Bool) -> MF2
 op2IIB op (I i1) (I i2) = return (B (i1 `op` i2))
 op2IIB _  v1      v2
-| not (isI v1) = intExpected v1
-| otherwise    = intExpected v2
+    | not (isI v1) = intExpected v1
+    | otherwise    = intExpected v2
 
 divIII :: (Integer -> Integer -> Integer) -> MF2
 divIII _ (I _) (I 0)   = div0
