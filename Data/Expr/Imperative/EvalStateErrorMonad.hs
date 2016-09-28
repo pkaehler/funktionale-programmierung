@@ -8,7 +8,10 @@ import Prelude hiding (lookup)
 
 import Control.Applicative (Applicative(..))
 import Control.Monad
+
 import Control.Monad.Except
+
+
 import Control.Monad.State
 
 import Data.Expr.Imperative.Types
@@ -95,27 +98,21 @@ instance Monad Result where
     = RT $ \store -> (return x, store)
 
   RT sf >>= f
-    = RT $ \store ->
-           let (a,store1) = sf store
-           in
-             case a of
-                 E e -> (E e, store1)
-                 R v -> let RT sf2 = f v
-                        in sf2 store1
+    = undefined
 
 instance MonadError EvalError Result where
   throwError e
-    = RT $ \store -> (throwError e,store)
+    = undefined
 
   catchError (RT sf) handler
     = undefined
 
 instance MonadState Store Result where
   get
-    = RT $ \store -> (return store, store)
+    = undefined
 
   put st
-    = RT $ \store -> (return (), st)
+    = undefined
 
 -- ----------------------------------------
 --
@@ -196,11 +193,13 @@ eval (Unary preOp e)
                              return incremented
 eval (Unary postOp e)
   | postOp `elem` [PostIncr, PostDecr]
-                       = do ident <- evalLValue e
-                            value <- readVar ident
-                            incremented <- mf1 postOp value
-                            writeVar ident incremented
-                            return incremented
+
+                       = do do ident <- evalLValue e
+                       value <- readVar ident
+                       incremented <- mf1 postOp value
+                       writeVar ident incremented
+                       return value
+
 
 eval (Unary  op e1)    = do v1  <- eval e1
                             mf1 op v1
