@@ -53,8 +53,7 @@ isE (E _) = True
 isE _     = False
 
 instance Functor Result where
-  fmap =
-    fmap f (R x) = R (f x)
+    fmap f (R x) = R (map f x)
     fmap _ (E e) = E e
 
 instance Applicative Result where
@@ -77,9 +76,9 @@ instance Applicative Result where
 -- test case e11 in EvalSimple
 
 instance Monad Result where
-  return a= R $ \_ -> return a
-  (>>=) (R val) f = f val
+  return a = R ([a])
   (>>=) (E val) _ = E val
+  (>>=) (R val) f = f (head val)
 
 instance Alternative Result where
   empty = mzero
