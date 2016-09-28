@@ -228,7 +228,7 @@ eval (Binary Or  e1 e2)
                        = eval (cond e1  true e2) -- similar to And
 
 eval (Binary Impl e1 e2)
-                       = --eval(cond e1 e2) -- similar to And
+                       = undefined --eval(cond e1 e2) -- similar to And
 
 eval (Binary op e1 e2)
   | isStrict op        = do v1 <- eval e1
