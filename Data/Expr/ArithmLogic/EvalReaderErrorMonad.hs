@@ -79,25 +79,24 @@ type Env = Map Ident Value
 newtype Result a = RR { unRR :: Env -> ResVal a }
 
 instance Functor Result where
-  fmap f (RR e f) = RR $\ env ->fmap f (e f env)
+  fmap f (RR a) = RR $ \env -> fmap f (a env)
 
 instance Applicative Result where
   pure = return
   (<*>) = ap
 
 instance Monad Result where
-  return a = RR $ \ _env -> return a
-  (>>=) env f = RR $ \ env -> do x <- ef env
-                                    let RR ef' = f x
-                                    ef' env
+  return a = RR $ \_ -> return a
+  (>>=) m k = RR $ \env -> do v <- (unRR m) env
+                              unRR (k v) env
 
 instance MonadError EvalError Result where
   throwError e
-      = RR $ \_ env -> throwError e
+      = RR $ \_env -> throwError e
 
   catchError (RR ef) handler
     = RR $ \ env  -> catchError ( ef env)
-    (\e->let RR ef' = handler e in ef' env)
+    (\e -> let RR ef' = handler e in ef' env)
 
 instance MonadReader Env Result where
    ask             = RR $ return
@@ -143,7 +142,7 @@ eval :: Expr -> Result Value
 eval (BLit b)          = return (B b)
 eval (ILit i)          = return (I i)
 eval (Var    x)        =  do v <- asks $ M.lookup x
-                            maybe (freeVar x) return v
+                             maybe (freeVar x) return v
 eval (Unary  op e1)    = do v1  <- eval e1
                             mf1 op v1
 
@@ -156,7 +155,7 @@ eval (Cond   c e1 e2)  = do b <- evalBool c
                               then eval e1
                               else eval e2
 
-eval (Let x e1 e2)     =
+-- eval (Let x e1 e2)     =
 
 evalBool :: Expr -> Result Bool
 evalBool e
