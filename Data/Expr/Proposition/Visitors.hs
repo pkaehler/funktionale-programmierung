@@ -38,12 +38,10 @@ substVars env
 eval :: Expr -> Bool
 eval
   = visit $ undefined
---      V {vLit   = Lit
---      , vVar    = \x -> case lookup x env of
---                        Nothing -> Var x
---                        Just a -> a
---      , vUnary  = Unary
---      , vBinary = Binary
---      }
+      V {vLit   = \x -> x
+      , vVar    = \x -> error $ unwords ["free variable", show x, "in expression"]
+      , vUnary  = mf1
+      , vBinary = mf2
+      }
 
 -- ----------------------------------------
