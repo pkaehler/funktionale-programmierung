@@ -25,7 +25,10 @@ prop_fromList''' xs
 -- length of paths may be differ at most by 1
 prop_balance :: Tree Int -> Bool
 prop_balance t
-  = undefined
+     = maxD == minD || maxD-1 == minD
+       where
+      	 maxD = maxDepth t
+      	 minD = minDepth t
 
 -- weaker balancing criterium
 -- no path is longer than "ceiling (ld n)"

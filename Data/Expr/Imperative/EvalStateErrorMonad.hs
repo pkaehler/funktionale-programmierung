@@ -192,7 +192,7 @@ eval :: Expr -> Result Value
 eval (BLit b)          = return (B b)
 eval (ILit i)          = return (I i)
 
-eval (Var    i)        = undefined
+eval (Var    i)        = readVar i
 
 eval (Unary preOp e)
   | preOp `elem` [PreIncr, PreDecr]
@@ -215,7 +215,10 @@ eval (Unary  op e1)    = do v1  <- eval e1
                             mf1 op v1
 
 eval (Binary Assign lhs rhs)
-                       = do undefined  -- use evalLValue, writeVar
+                       = do ident <- evalLValue lhs
+                            value <- eval rhs
+                            writeVar ident value
+                            return value
 
 eval (Binary Seq e1 e2)
                         = eval e1 << eval e2
@@ -228,7 +231,7 @@ eval (Binary Or  e1 e2)
                        = eval (cond e1  true e2) -- similar to And
 
 eval (Binary Impl e1 e2)
-                       = undefined --eval(cond e1 e2) -- similar to And
+                       = eval (cond (not' e1) true e2) --eval(cond e1 e2) -- similar to And
 
 eval (Binary op e1 e2)
   | isStrict op        = do v1 <- eval e1
@@ -242,7 +245,10 @@ eval (Cond   c e1 e2)  = do b <- evalBool c
                               then eval e1
                               else eval e2
 
-eval e@(While c body)   = do undefined
+eval e@(While c body) =  do shallRun <- evalBool c
+                            if shallRun
+                              then eval body >> eval e
+                              else return (B shallRun)
 
 eval (Read _)           = notImpl "read"  -- needs IO
 eval (Write _ _)        = notImpl "write" -- needs IO
