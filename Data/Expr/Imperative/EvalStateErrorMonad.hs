@@ -203,13 +203,11 @@ eval (Unary preOp e)
                              return incremented
 eval (Unary postOp e)
   | postOp `elem` [PostIncr, PostDecr]
-
-                       =  do ident <- evalLValue e
-                       value <- readVar ident
-                       incremented <- mf1 postOp value
-                       writeVar ident incremented
-                       return value
-
+                       = do ident <- evalLValue e
+                            value <- readVar ident
+                            incremented <- mf1 postOp value
+                            writeVar ident incremented
+                            return value
 
 eval (Unary  op e1)    = do v1  <- eval e1
                             mf1 op v1
@@ -228,7 +226,7 @@ eval (Binary And e1 e2)
                        = eval (cond e1 e2 false)
 
 eval (Binary Or  e1 e2)
-                       = eval (cond e1  true e2) -- similar to And
+                       = eval (cond e1 true e2 ) -- similar to And
 
 eval (Binary Impl e1 e2)
                        = eval (cond (not' e1) true e2) --eval(cond e1 e2) -- similar to And
