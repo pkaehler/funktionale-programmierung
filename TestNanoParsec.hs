@@ -56,7 +56,7 @@ eval ex = case ex of
 
 -- parse an integer literal
 int :: Parser Expr
-int = do n <- number
+int = do n <- token number
          return (Lit (read n))
 
 expr :: Parser Expr
@@ -67,6 +67,7 @@ term = factor `chainl1` mulop
 
 factor :: Parser Expr
 factor = parens expr
+         <|> int
 
 infixOp :: String -> (a -> a -> a) -> Parser (a -> a -> a)
 infixOp x f = reserved x >> return f
@@ -81,7 +82,7 @@ mulop = infixOp "*" Mul
 -- the main prog
 
 parse :: String -> Either String Expr
-parse = runParser expr
+parse = runParser $ spaces >> expr
 
 main :: IO ()
 main = do
