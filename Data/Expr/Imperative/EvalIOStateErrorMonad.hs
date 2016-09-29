@@ -88,7 +88,8 @@ newtype Result a = RT { runResult :: Store -> IO (ResVal a, Store) }
 
 instance Functor Result where
   fmap f (RT sf)
-    = undefined
+    = RT $ \ store -> do (a, s) <- sf store
+                      return (fmap f a, s)
   
 instance Applicative Result where
   pure  = return
@@ -97,7 +98,7 @@ instance Applicative Result where
 instance Monad Result where
   return x
     = RT $ \ st ->
-            undefined
+            return (return x, st)
 
   RT sf >>= f
     = RT $ \ st ->
@@ -106,7 +107,7 @@ instance Monad Result where
 instance MonadError EvalError Result where
   throwError e
     = RT $ \ st ->
-            undefined
+            return (E e, st)
   
   catchError (RT sf) handler
     = RT $ \ st ->
@@ -121,14 +122,17 @@ instance MonadError EvalError Result where
 
 instance MonadState Store Result where
   get
-    = RT $ \ st -> undefined
+    = RT $ \ st -> return (return st, st)
 
   put st
-    = RT $ \ _old -> undefined
+    = RT $ \ _old -> return (R (), st)
+
 
 instance MonadIO Result where
   liftIO io = RT $ \ st ->
-                    do undefined
+                    do x <- io
+                       return (return x, st)
+
                               
 -- ----------------------------------------
 --
