@@ -109,7 +109,11 @@ instance Monad Result where
 
 instance MonadError EvalError Result where
   throwError e = RT $ \store -> (throwError e,store)
-  catchError (RT sf) handler = undefined
+  catchError (RT sf) handler = RT $ \store -> let (resval ,store1) = sf store in
+                                              case resval of
+                                                  R r -> (R r, store1)
+                                                  E e -> (runResult (handler e) store1)
+
 
 instance MonadState Store Result where
   get = RT $ \store -> (return store, store)
@@ -210,7 +214,7 @@ eval (Binary Assign lhs rhs)
                             writeVar ident value
                             return value
 
-eval (Binary Seq e1 e2) = eval e1 >> eval e2  
+eval (Binary Seq e1 e2) = eval e1 >> eval e2
 
 
 eval (Binary And e1 e2)
