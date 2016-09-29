@@ -210,7 +210,7 @@ eval (Binary Assign lhs rhs)
                             writeVar ident value
                             return value
 
--- undefined eval (Binary Seq e1 e2) = eval e1 << eval e2  
+eval (Binary Seq e1 e2) = eval e1 >> eval e2  
 
 
 eval (Binary And e1 e2)
