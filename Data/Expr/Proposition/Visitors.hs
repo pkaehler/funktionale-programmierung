@@ -37,7 +37,7 @@ substVars env
 
 eval :: Expr -> Bool
 eval
-  = visit $ undefined
+  = visit $
       V {vLit   = \x -> x
       , vVar    = \x -> error $ unwords ["free variable", show x, "in expression"]
       , vUnary  = mf1
