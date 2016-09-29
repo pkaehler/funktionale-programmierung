@@ -64,8 +64,8 @@ instance Alternative Tree where
   (<|>) = mplus
 
 instance MonadPlus Tree where
-  mzero = undefined
-  mplus = undefined
+  mzero = Null
+  mplus = Bin
 
 instance Monoid (Tree a) where
   mempty  = Null
